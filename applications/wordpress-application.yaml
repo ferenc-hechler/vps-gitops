@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: wordpress
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    chart: wordpress
+    repoURL: registry-1.docker.io/bitnamicharts
+    targetRevision: 34.2.5
+    helm:
+      values: |
+        service:
+          type: ClusterIP
+        wordpressUsername: vps-2adMIN
+        # Passwort liegt nicht im Git, sondern im Secret "wordpress-credentials"
+        # (Key: wordpress-password), siehe Sealed Secret / manuell angelegt.
+        existingSecret: wordpress-credentials
+
+        readinessProbe:
+          enabled: false
+        livenessProbe:
+          enabled: true
+        #image:
+        #  repository: ocfork/wordpress-updraft
+        #  pullPolicy: Always
+        #extraEnvVars:
+        #- name: WORDPRESS_EXTRA_PLUGINS
+        #  value: "updraftplus"
+        #global:
+        #  security:
+        #    allowInsecureImages: true
+        wordpressPlugins: "updraftplus"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: wordpress
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

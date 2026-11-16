@@ -1,0 +1,9 @@
+leClusterIssuer: letsencrypt-production
+parentDomain: vps-2.calcbox.de
+
+subDomain: generic
+
+service:
+  name: generic-service
+  port: 80
+

@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.subDomain }}-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.leClusterIssuer }}  
+spec:
+  ingressClassName: nginx
+  tls:
+    - secretName: {{ .Values.subDomain }}-ssl
+      hosts:
+      - {{ .Values.subDomain }}.{{ .Values.parentDomain }}
+  rules:
+  - host: "{{ .Values.subDomain }}.{{ .Values.parentDomain }}"
+    http:
+      paths:
+        - pathType: Prefix
+          path: "/"
+          backend:
+            service:
+              name: {{ .Values.service.name }}
+              port:
+                number: {{ .Values.service.port }}

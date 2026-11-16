@@ -7,11 +7,15 @@ spec:
   project: default
   source:
     repoURL: https://github.com/ferenc-hechler/vps-gitops.git
-    path: helm/wordpress-ingresss
+    path: helm/nginx-ingresss
     targetRevision: main
     helm:
       values: |
-        parentDomain: vps-2.calcbox.de
+	    subDomain: wordpress
+	    parentDomain: vps-2.calcbox.de
+		servie:
+		  name: wordpress
+		  port: 80
   destination:
     server: https://kubernetes.default.svc
     namespace: wordpress

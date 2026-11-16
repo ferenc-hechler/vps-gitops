@@ -4,9 +4,9 @@ metadata:
   name: {{ .Values.subDomain }}-ingress
   annotations:
     cert-manager.io/cluster-issuer: {{ .Values.leClusterIssuer }}  
-	{{ if .Values.service.ssl }}
-	nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-	{{- end }}
+    {{ if .Values.service.ssl }}
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    {{- end }}
 spec:
   ingressClassName: nginx
   tls:

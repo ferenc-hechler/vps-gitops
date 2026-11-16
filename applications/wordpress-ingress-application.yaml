@@ -11,11 +11,11 @@ spec:
     targetRevision: main
     helm:
       values: |
-	    subDomain: wordpress
-	    parentDomain: vps-2.calcbox.de
-		servie:
-		  name: wordpress
-		  port: 80
+        subDomain: wordpress
+        parentDomain: vps-2.calcbox.de
+        servie:
+          name: wordpress
+          port: 80
   destination:
     server: https://kubernetes.default.svc
     namespace: wordpress

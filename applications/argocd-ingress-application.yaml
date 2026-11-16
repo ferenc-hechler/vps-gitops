@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-ingress
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ferenc-hechler/vps-gitops.git
+    path: helm/nginx-ingresss
+    targetRevision: main
+    helm:
+      values: |
+        subDomain: argocd
+        parentDomain: vps-2.calcbox.de
+        service:
+          name: argocd-server
+          port: 443
+          ssl: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true  

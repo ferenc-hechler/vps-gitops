@@ -6,4 +6,5 @@ subDomain: generic
 service:
   name: generic-service
   port: 80
+  ssl: false
 

@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/ferenc-hechler/vps-gitops.git
     path: helm/wordpress-ingresss
-    targetRevision: vps-2
+    targetRevision: main
     helm:
       values: |
         parentDomain: vps-2.calcbox.de

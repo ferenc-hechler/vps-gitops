@@ -13,7 +13,7 @@ spec:
       values: |
         subDomain: wordpress
         parentDomain: vps-2.calcbox.de
-        servie:
+        service:
           name: wordpress
           port: 80
   destination:

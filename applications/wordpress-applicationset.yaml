@@ -1,0 +1,84 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: wordpress
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=zero"]
+  generators:
+    - list:
+        elements:
+          - name: wordpress
+            chart: wordpress
+            repoURL: registry-1.docker.io/bitnamicharts
+            targetRevision: "34.2.5"
+            finalizer: true
+            values: |
+              service:
+                type: ClusterIP
+              wordpressUsername: vps-2adMIN
+              # Passwort liegt nicht im Git, sondern im Secret "wordpress-credentials"
+              # (Key: wordpress-password), siehe Sealed Secret / manuell angelegt.
+              existingSecret: wordpress-credentials
+              readinessProbe:
+                enabled: false
+              livenessProbe:
+                enabled: true
+              wordpressPlugins: "updraftplus"
+          - name: wordpress-ingress
+            path: helm/nginx-ingresss
+            repoURL: https://github.com/ferenc-hechler/vps-gitops.git
+            targetRevision: main
+            values: |
+              subDomain: wordpress
+              parentDomain: vps-2.calcbox.de
+              service:
+                name: wordpress
+                port: 80
+          - name: wordpress-secret
+            path: manifests/wordpress-secret
+            repoURL: https://github.com/ferenc-hechler/vps-gitops.git
+            targetRevision: main
+            # vor der WordPress-Application synchronisieren
+            syncWave: "-1"
+  template:
+    metadata:
+      name: '{{ .name }}'
+    spec:
+      project: default
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: wordpress
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+  templatePatch: |
+    {{- if or .finalizer .syncWave }}
+    metadata:
+      {{- if .finalizer }}
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+      {{- end }}
+      {{- if .syncWave }}
+      annotations:
+        argocd.argoproj.io/sync-wave: {{ .syncWave | quote }}
+      {{- end }}
+    {{- end }}
+    spec:
+      source:
+        repoURL: {{ .repoURL }}
+        targetRevision: {{ .targetRevision }}
+        {{- if .chart }}
+        chart: {{ .chart }}
+        {{- else }}
+        path: {{ .path }}
+        {{- end }}
+        {{- if .values }}
+        helm:
+          values: |
+            {{- .values | nindent 12 }}
+        {{- end }}

@@ -19,20 +19,10 @@ spec:
         # Passwort liegt nicht im Git, sondern im Secret "wordpress-credentials"
         # (Key: wordpress-password), siehe Sealed Secret / manuell angelegt.
         existingSecret: wordpress-credentials
-
         readinessProbe:
           enabled: false
         livenessProbe:
           enabled: true
-        #image:
-        #  repository: ocfork/wordpress-updraft
-        #  pullPolicy: Always
-        #extraEnvVars:
-        #- name: WORDPRESS_EXTRA_PLUGINS
-        #  value: "updraftplus"
-        #global:
-        #  security:
-        #    allowInsecureImages: true
         wordpressPlugins: "updraftplus"
   destination:
     server: https://kubernetes.default.svc
